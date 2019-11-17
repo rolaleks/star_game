@@ -18,8 +18,8 @@ public class Background {
         }
 
         public void update(float dt) {
-            position.x += (velocity.x - game.getHero().getLastDisplacement().x * 15) * dt;
-            position.y += (velocity.y - game.getHero().getLastDisplacement().y * 15) * dt;
+            position.x += (velocity.x - getBackgroundDisplacement().x) * dt;
+            position.y += (velocity.y - getBackgroundDisplacement().y) * dt;
             if (position.x < -20) {
                 position.x = ScreenManager.SCREEN_WIDTH + 20;
                 position.y = MathUtils.random(-200, ScreenManager.SCREEN_HEIGHT + 200);
@@ -58,5 +58,11 @@ public class Background {
         for (int i = 0; i < stars.length; i++) {
             stars[i].update(dt);
         }
+    }
+
+    public Vector2 getBackgroundDisplacement() {
+        Vector2 heroDisplacement = game.getHero().getLastDisplacement();
+
+        return new Vector2(heroDisplacement.x * 15, heroDisplacement.y * 15);
     }
 }

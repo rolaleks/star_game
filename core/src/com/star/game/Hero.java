@@ -7,6 +7,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
 public class Hero {
+
+    private final float frontSpeed = 240f;
+    private final float rearSpeed = 120f;
+
     private Texture texture;
     private Vector2 position;
     private Vector2 lastDisplacement;
@@ -35,12 +39,19 @@ public class Hero {
             angle -= 180.0f * dt;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            position.x += (float) Math.cos(Math.toRadians(angle)) * 240.0f * dt;
-            position.y += (float) Math.sin(Math.toRadians(angle)) * 240.0f * dt;
-            lastDisplacement.set((float) Math.cos(Math.toRadians(angle)) * 240.0f * dt, (float) Math.sin(Math.toRadians(angle)) * 240.0f * dt);
+            position.x += (float) Math.cos(Math.toRadians(angle)) * frontSpeed * dt;
+            position.y += (float) Math.sin(Math.toRadians(angle)) * frontSpeed * dt;
+            lastDisplacement.set((float) Math.cos(Math.toRadians(angle)) * frontSpeed * dt, (float) Math.sin(Math.toRadians(angle)) * frontSpeed * dt);
+        } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+            float xShift = (float) Math.cos(Math.toRadians(angle)) * rearSpeed * dt;
+            float yShift = (float) Math.sin(Math.toRadians(angle)) * rearSpeed * dt;
+            position.x -= xShift;
+            position.y -= yShift;
+            lastDisplacement.set(-xShift, -yShift);
         } else {
             lastDisplacement.set(0, 0);
         }
+
         if (position.x < 0.0f) {
             position.x = 0.0f;
         }
