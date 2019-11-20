@@ -61,4 +61,9 @@ public class Asteroid implements Poolable {
         generatePositionAndVelocity();
         active = true;
     }
+
+    public boolean isHit(Vector2 position) {
+
+        return this.position.dst(position) < 128;
+    }
 }
