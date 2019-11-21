@@ -2,50 +2,40 @@ package com.star.app.game;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.star.app.game.helpers.Poolable;
 import com.star.app.screen.ScreenManager;
-import com.star.app.StarGame;
+import com.star.app.screen.utils.Assets;
 
 public class Asteroid implements Poolable {
+    private GameController gc;
+    private TextureRegion texture;
     private Vector2 position;
     private Vector2 velocity;
-    private Texture texture;
+    private int hpMax;
+    private int hp;
+    private float scale;
+    private float angle;
+    private float rotationSpeed;
     private boolean active;
-    private GameController gc;
+    private Circle hitArea;
 
-    public Asteroid(GameController gc) {
-        generatePositionAndVelocity();
-        this.texture = new Texture("asteroid.png");
-        this.gc = gc;
+    private final float BASE_SIZE = 256.0f;
+    private final float BASE_RADIUS = BASE_SIZE / 2.0f;
+
+    public int getHpMax() {
+        return hpMax;
     }
 
-    private void generatePositionAndVelocity() {
-        this.position = new Vector2(MathUtils.random(-128, ScreenManager.SCREEN_WIDTH + 128), MathUtils.random(-128, ScreenManager.SCREEN_HEIGHT + 128));
-        this.velocity = new Vector2(MathUtils.random(-100, 100), MathUtils.random(-100, 100));
+    public Vector2 getPosition() {
+        return position;
     }
 
-    public void render(SpriteBatch batch) {
-
-        batch.draw(texture, position.x - 128, position.y - 128, 128, 128, 256, 256, 1, 1, 0, 0, 0, 256, 256, false, false);
-    }
-
-    public void update(float dt) {
-        position.x += (velocity.x - gc.getBackground().getBackgroundDisplacement().x) * dt;
-        position.y += (velocity.y - gc.getBackground().getBackgroundDisplacement().y) * dt;
-        if (position.x < -128) {
-            position.x = ScreenManager.SCREEN_WIDTH + 128;
-        }
-        if (position.x > ScreenManager.SCREEN_WIDTH + 128) {
-            position.x = -128;
-        }
-        if (position.y < -128) {
-            position.y = ScreenManager.SCREEN_HEIGHT + 128;
-        }
-        if (position.y > ScreenManager.SCREEN_HEIGHT + 128) {
-            position.y = -128;
-        }
+    public Circle getHitArea() {
+        return hitArea;
     }
 
     @Override
@@ -57,9 +47,82 @@ public class Asteroid implements Poolable {
         active = false;
     }
 
+    public Asteroid(GameController gc) {
+        this.gc = gc;
+        this.scale = 1.0f;
+        this.position = new Vector2(0, 0);
+        this.velocity = new Vector2(0, 0);
+        this.hitArea = new Circle(0, 0, 0);
+        this.active = false;
+        this.texture = Assets.getInstance().getAtlas().findRegion("asteroid");
+    }
+
+    public boolean takeDamage(int amount) {
+        hp -= amount;
+        System.out.println(hp);
+        if (hp <= 0) {
+            deactivate();
+            if (scale > 0.25f) {
+                gc.getAsteroidController().launch(position.x, position.y, MathUtils.random(-150.0f, 150.0f), MathUtils.random(-150.0f, 150.0f), scale - 0.2f);
+                gc.getAsteroidController().launch(position.x, position.y, MathUtils.random(-150.0f, 150.0f), MathUtils.random(-150.0f, 150.0f), scale - 0.2f);
+                gc.getAsteroidController().launch(position.x, position.y, MathUtils.random(-150.0f, 150.0f), MathUtils.random(-150.0f, 150.0f), scale - 0.2f);
+            }
+            return true;
+        }
+        return false;
+    }
+
+
+    public void render(SpriteBatch batch) {
+        batch.draw(texture, position.x - 128, position.y - 128, 128, 128, 256, 256, scale, scale, angle);
+    }
+
+    public void update(float dt) {
+        position.x += (velocity.x - gc.getBackground().getBackgroundDisplacement().x) * dt;
+        position.y += (velocity.y - gc.getBackground().getBackgroundDisplacement().y) * dt;
+        angle += rotationSpeed * dt;
+        if (position.x < -BASE_RADIUS * scale) {
+            position.x = ScreenManager.SCREEN_WIDTH + BASE_RADIUS * scale;
+        }
+        if (position.x > ScreenManager.SCREEN_WIDTH + BASE_RADIUS * scale) {
+            position.x = -BASE_RADIUS * scale;
+        }
+        if (position.y < -BASE_RADIUS * scale) {
+            position.y = ScreenManager.SCREEN_HEIGHT + BASE_RADIUS * scale;
+        }
+        if (position.y > ScreenManager.SCREEN_HEIGHT + BASE_RADIUS * scale) {
+            position.y = -BASE_RADIUS * scale;
+        }
+        hitArea.setPosition(position);
+    }
+
     public void activate() {
+        this.scale = 1.0f;
         generatePositionAndVelocity();
-        active = true;
+        baseActivate();
+    }
+
+    public void activate(float x, float y, float vx, float vy, float scale) {
+        this.position.set(x, y);
+        this.velocity.set(vx, vy);
+        this.scale = scale;
+        baseActivate();
+    }
+
+
+    private void baseActivate() {
+        this.active = true;
+        this.hpMax = (int) (10 * scale);
+        this.hp = this.hpMax;
+        this.angle = MathUtils.random(0.0f, 360.0f);
+        this.hitArea.setPosition(position);
+        this.rotationSpeed = MathUtils.random(-60.0f, 60.0f);
+        this.hitArea.setRadius(BASE_RADIUS * scale * 0.9f);
+    }
+
+    private void generatePositionAndVelocity() {
+        this.position = new Vector2(MathUtils.random(-128, ScreenManager.SCREEN_WIDTH + 128), MathUtils.random(-128, ScreenManager.SCREEN_HEIGHT + 128));
+        this.velocity = new Vector2(MathUtils.random(-100, 100), MathUtils.random(-100, 100));
     }
 
     public boolean isHit(Vector2 position) {

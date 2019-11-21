@@ -1,18 +1,21 @@
 package com.star.app.game;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.math.MathUtils;
+import com.star.app.screen.ScreenManager;
+
 public class GameController {
     private Background background;
-    private BulletController bulletController;
     private AsteroidController asteroidController;
+    private BulletController bulletController;
     private Hero hero;
-    private Asteroid asteroid;
-
-    public BulletController getBulletController() {
-        return bulletController;
-    }
 
     public AsteroidController getAsteroidController() {
         return asteroidController;
+    }
+
+    public BulletController getBulletController() {
+        return bulletController;
     }
 
     public Background getBackground() {
@@ -23,15 +26,11 @@ public class GameController {
         return hero;
     }
 
-    public Asteroid getAsteroid() {
-        return asteroid;
-    }
-
     public GameController() {
         this.background = new Background(this);
         this.hero = new Hero(this);
         this.bulletController = new BulletController();
-        this.asteroidController = new AsteroidController(this);
+        this.asteroidController = new AsteroidController(this,3);
     }
 
     public void update(float dt) {
