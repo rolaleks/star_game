@@ -54,14 +54,4 @@ public class AsteroidController extends ObjectPool<Asteroid> {
         getActiveElement().activate();
     }
 
-    public boolean checkBulletCollision(Vector2 position) {
-        for (int i = 0; i < activeList.size(); i++) {
-            Asteroid asteroid = activeList.get(i);
-            if (asteroid.isHit(position)) {
-                asteroid.takeDamage(1);
-                return true;
-            }
-        }
-        return false;
-    }
 }

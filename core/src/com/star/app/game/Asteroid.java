@@ -10,18 +10,15 @@ import com.star.app.game.helpers.Poolable;
 import com.star.app.screen.ScreenManager;
 import com.star.app.screen.utils.Assets;
 
-public class Asteroid implements Poolable {
+public class Asteroid extends GameObject implements Poolable, Damageable {
     private GameController gc;
     private TextureRegion texture;
-    private Vector2 position;
-    private Vector2 velocity;
     private int hpMax;
     private int hp;
     private float scale;
     private float angle;
     private float rotationSpeed;
     private boolean active;
-    private Circle hitArea;
 
     private final float BASE_SIZE = 256.0f;
     private final float BASE_RADIUS = BASE_SIZE / 2.0f;
@@ -30,12 +27,8 @@ public class Asteroid implements Poolable {
         return hpMax;
     }
 
-    public Vector2 getPosition() {
-        return position;
-    }
-
-    public Circle getHitArea() {
-        return hitArea;
+    public float getScale() {
+        return scale;
     }
 
     @Override
@@ -48,18 +41,15 @@ public class Asteroid implements Poolable {
     }
 
     public Asteroid(GameController gc) {
+        super();
         this.gc = gc;
         this.scale = 1.0f;
-        this.position = new Vector2(0, 0);
-        this.velocity = new Vector2(0, 0);
-        this.hitArea = new Circle(0, 0, 0);
         this.active = false;
         this.texture = Assets.getInstance().getAtlas().findRegion("asteroid");
     }
 
     public boolean takeDamage(int amount) {
         hp -= amount;
-        System.out.println(hp);
         if (hp <= 0) {
             deactivate();
             if (scale > 0.25f) {
@@ -94,6 +84,8 @@ public class Asteroid implements Poolable {
             position.y = -BASE_RADIUS * scale;
         }
         hitArea.setPosition(position);
+
+        super.update();
     }
 
     public void activate() {
@@ -125,8 +117,35 @@ public class Asteroid implements Poolable {
         this.velocity = new Vector2(MathUtils.random(-100, 100), MathUtils.random(-100, 100));
     }
 
-    public boolean isHit(Vector2 position) {
 
-        return this.position.dst(position) < 128;
+    @Override
+    public void collide(Collidable collidable) {
+
+        if (collidable instanceof Bullet) {
+            Bullet bullet = (Bullet) collidable;
+            bullet.deactivate();
+            if (this.takeDamage(1)) {
+                gc.getHero().addScore(this.getHpMax() * 100);
+            }
+        } else if (collidable instanceof Hero) {
+            Vector2 initAsteroidVelocity = new Vector2(this.velocity.x, this.velocity.y);
+            Hero hero = (Hero) collidable;
+            float overlapDst = this.hitArea.radius + hero.hitArea.radius - hero.position.dst(this.position);
+            Vector2 overlapImpulse = new Vector2(this.position.x - hero.position.x, this.position.y - hero.position.y);
+            overlapImpulse = overlapImpulse.nor().scl(overlapDst + 2);
+            this.position.add(overlapImpulse);
+            this.velocity.add(hero.velocity);
+            if (this.velocity.len() > 150) {
+                this.velocity = this.velocity.nor().scl(150);
+            }
+            Vector2 heroOverlapImpulse = new Vector2(hero.position.x - this.position.x, hero.position.y - this.position.y);
+            heroOverlapImpulse = heroOverlapImpulse.nor().scl(overlapDst + 2);
+            hero.position.add(heroOverlapImpulse);
+            hero.velocity.mulAdd(initAsteroidVelocity, this.getScale() * 5.2f);
+            if (this.takeDamage(5)) {
+                gc.getHero().addScore(this.getHpMax() * 100);
+            }
+        }
+
     }
 }

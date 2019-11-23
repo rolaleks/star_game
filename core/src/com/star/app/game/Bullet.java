@@ -1,18 +1,14 @@
 package com.star.app.game;
 
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector2;
 import com.star.app.game.helpers.Poolable;
 import com.star.app.screen.ScreenManager;
 
-public class Bullet implements Poolable {
-    private Vector2 position;
-    private Vector2 velocity;
+public class Bullet extends GameObject implements Poolable {
+
     private float angle;
     private boolean active;
-
-    public Vector2 getPosition() {
-        return position;
-    }
 
     public float getAngle() {
         return angle;
@@ -28,6 +24,7 @@ public class Bullet implements Poolable {
     }
 
     public Bullet() {
+        super();
         this.position = new Vector2(0, 0);
         this.velocity = new Vector2(0, 0);
         this.active = false;
@@ -42,8 +39,16 @@ public class Bullet implements Poolable {
 
     public void update(float dt) {
         position.mulAdd(velocity, dt);
+        super.update();
         if (position.x < 0.0f || position.x > ScreenManager.SCREEN_WIDTH || position.y < 0.0f || position.y > ScreenManager.SCREEN_HEIGHT) {
             deactivate();
+        }
+    }
+
+    @Override
+    public void collide(Collidable collidable) {
+        if (collidable instanceof Asteroid) {
+            this.deactivate();
         }
     }
 }

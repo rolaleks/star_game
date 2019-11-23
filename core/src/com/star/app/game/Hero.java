@@ -5,23 +5,24 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.star.app.screen.ScreenManager;
 import com.star.app.screen.utils.Assets;
 
-public class Hero {
+public class Hero extends GameObject implements Damageable {
     private GameController gc;
     private final float frontSpeed = 750f;
     private final float rearSpeed = 375f;
 
     private TextureRegion texture;
-    private Vector2 position;
-    private Vector2 velocity;
     private float angle;
     private float fireTimer;
     private int score;
     private int scoreView;
     private boolean rightOrLeftSocket;
+    private int hpMax;
+    private int hp;
 
     public int getScoreView() {
         return scoreView;
@@ -35,20 +36,19 @@ public class Hero {
         return score;
     }
 
-    public Vector2 getPosition() {
-        return position;
-    }
-
-    public Vector2 getVelocity() {
-        return velocity;
+    public int getHp() {
+        return hp;
     }
 
     public Hero(GameController gc) {
+        super();
         this.gc = gc;
         this.texture = Assets.getInstance().getAtlas().findRegion("ship");
         this.position = new Vector2(640, 360);
-        this.velocity = new Vector2(0, 0);
         this.angle = 0.0f;
+        this.hitArea.radius = 30;
+        this.hpMax = 50;
+        this.hp = hpMax;
     }
 
     public void render(SpriteBatch batch) {
@@ -119,5 +119,24 @@ public class Hero {
             position.y = ScreenManager.SCREEN_HEIGHT;
             velocity.y *= -1;
         }
+        super.update();
+    }
+
+    @Override
+    public void collide(Collidable collidable) {
+        if (collidable instanceof Asteroid) {
+
+            Asteroid asteroid = (Asteroid) collidable;
+            this.takeDamage((int)(asteroid.getScale() * 10));
+        }
+    }
+
+    @Override
+    public boolean takeDamage(int amount) {
+        hp -= amount;
+        if (hp <= 0) {
+            Gdx.app.exit();
+        }
+        return false;
     }
 }

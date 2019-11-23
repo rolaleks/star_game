@@ -1,14 +1,12 @@
 package com.star.app.game;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.math.MathUtils;
-import com.star.app.screen.ScreenManager;
 
 public class GameController {
     private Background background;
     private AsteroidController asteroidController;
     private BulletController bulletController;
     private Hero hero;
+    private CollisionManager collisionManager;
 
     public AsteroidController getAsteroidController() {
         return asteroidController;
@@ -31,6 +29,7 @@ public class GameController {
         this.hero = new Hero(this);
         this.bulletController = new BulletController();
         this.asteroidController = new AsteroidController(this,3);
+        this.collisionManager = new CollisionManager();
     }
 
     public void update(float dt) {
@@ -43,11 +42,7 @@ public class GameController {
 
 
     public void checkCollisions() {
-        for (int i = 0; i < bulletController.getActiveList().size(); i++) {
-            Bullet b = bulletController.getActiveList().get(i);
-            if (asteroidController.checkBulletCollision(b.getPosition())) {
-                b.deactivate();
-            }
-        }
+        this.collisionManager.check(bulletController.getActiveList(), asteroidController.getActiveList());
+        this.collisionManager.check(asteroidController.getActiveList(), this.hero);
     }
 }
