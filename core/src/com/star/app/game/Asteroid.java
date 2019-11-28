@@ -133,6 +133,29 @@ public class Asteroid extends GameObject implements Poolable, Damageable {
         if (this.takeDamage(1)) {
             gc.getHero().addScore(this.getHpMax() * 100);
         }
+        //10% выероятность при полном масштабе астероида
+        if (MathUtils.random(0, 100) < scale * 10) {
+            //Полеты предметов только в горизонтальном направлении с небольшим отклонением по высоте
+            Vector2 itemVelocity = new Vector2(MathUtils.random(-100.0f, 100.0f), MathUtils.random(-5.0f, 5.0f));
+            Vector2 itemPosition;
+            float positionY = MathUtils.random(10, ScreenManager.SCREEN_HEIGHT - 10);
+            if (itemVelocity.x > 0) {
+                itemPosition = new Vector2(MathUtils.random(-100.0f, -50.0f), positionY);
+            } else {
+                itemPosition = new Vector2(MathUtils.random(ScreenManager.SCREEN_WIDTH + 50.0f, ScreenManager.SCREEN_WIDTH + 100.0f), positionY);
+            }
+            switch (MathUtils.random(1, 3)) {
+                case 1:
+                    gc.getSpaceItemController().launchBullet(itemPosition.x, itemPosition.y, itemVelocity.x, itemVelocity.y, 1.0f);
+                    break;
+                case 2:
+                    gc.getSpaceItemController().launchHp(itemPosition.x, itemPosition.y, itemVelocity.x, itemVelocity.y, 1.0f);
+                    break;
+                case 3:
+                    gc.getSpaceItemController().launchMoney(itemPosition.x, itemPosition.y, itemVelocity.x, itemVelocity.y, 1.0f);
+                    break;
+            }
+        }
     }
 
     private void collideHero(Hero hero) {

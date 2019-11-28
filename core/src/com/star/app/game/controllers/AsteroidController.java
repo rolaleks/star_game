@@ -1,7 +1,9 @@
-package com.star.app.game;
+package com.star.app.game.controllers;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.star.app.game.Asteroid;
+import com.star.app.game.GameController;
 import com.star.app.game.helpers.ObjectPool;
 import com.star.app.screen.utils.Assets;
 
@@ -13,10 +15,6 @@ public class AsteroidController extends ObjectPool<Asteroid> {
     @Override
     protected Asteroid newObject() {
         return new Asteroid(gc);
-    }
-
-    public AsteroidController(GameController gc) {
-        this.gc = gc;
     }
 
     public AsteroidController(GameController gc, int initAsteroidCount) {

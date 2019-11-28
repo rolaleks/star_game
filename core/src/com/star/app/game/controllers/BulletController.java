@@ -1,8 +1,10 @@
-package com.star.app.game;
+package com.star.app.game.controllers;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.star.app.game.Bullet;
+import com.star.app.game.GameController;
 import com.star.app.game.helpers.ObjectPool;
 import com.star.app.screen.utils.Assets;
 

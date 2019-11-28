@@ -48,6 +48,10 @@ public class Hero extends GameObject implements Damageable {
         return hp;
     }
 
+    public Weapon getCurrentWeapon() {
+        return currentWeapon;
+    }
+
     public Hero(GameController gc) {
         super();
         this.gc = gc;
@@ -181,5 +185,12 @@ public class Hero extends GameObject implements Damageable {
             Gdx.app.exit();
         }
         return false;
+    }
+
+    public void addHp(int amount) {
+        hp += amount;
+        if (hp > hpMax) {
+            hp = hpMax;
+        }
     }
 }
