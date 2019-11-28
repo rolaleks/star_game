@@ -1,12 +1,12 @@
 package com.star.app.game;
 
-import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.star.app.game.helpers.Poolable;
 import com.star.app.screen.ScreenManager;
 
 public class Bullet extends GameObject implements Poolable {
-
+    private GameController gc;
     private float angle;
     private boolean active;
 
@@ -23,8 +23,9 @@ public class Bullet extends GameObject implements Poolable {
         active = false;
     }
 
-    public Bullet() {
+    public Bullet(GameController gc) {
         super();
+        this.gc = gc;
         this.position = new Vector2(0, 0);
         this.velocity = new Vector2(0, 0);
         this.active = false;
@@ -48,7 +49,19 @@ public class Bullet extends GameObject implements Poolable {
     @Override
     public void collide(Collidable collidable) {
         if (collidable instanceof Asteroid) {
-            this.deactivate();
+            collideAsteroid((Asteroid) collidable);
         }
+    }
+
+    private void collideAsteroid(Asteroid asteroid) {
+        this.deactivate();
+        gc.getParticleController().setup(
+                this.getPosition().x + MathUtils.random(-4, 4), this.getPosition().y + MathUtils.random(-4, 4),
+                this.getVelocity().x * -0.3f + MathUtils.random(-30, 30), this.getVelocity().y * -0.3f + MathUtils.random(-30, 30),
+                0.2f,
+                2.2f, 1.7f,
+                1.0f, 1.0f, 1.0f, 1.0f,
+                0.0f, 0.0f, 1.0f, 0.0f
+        );
     }
 }

@@ -122,30 +122,35 @@ public class Asteroid extends GameObject implements Poolable, Damageable {
     public void collide(Collidable collidable) {
 
         if (collidable instanceof Bullet) {
-            Bullet bullet = (Bullet) collidable;
-            bullet.deactivate();
-            if (this.takeDamage(1)) {
-                gc.getHero().addScore(this.getHpMax() * 100);
-            }
+            collideBullet((Bullet) collidable);
         } else if (collidable instanceof Hero) {
-            Vector2 initAsteroidVelocity = new Vector2(this.velocity.x, this.velocity.y);
-            Hero hero = (Hero) collidable;
-            float overlapDst = this.hitArea.radius + hero.hitArea.radius - hero.position.dst(this.position);
-            Vector2 overlapImpulse = new Vector2(this.position.x - hero.position.x, this.position.y - hero.position.y);
-            overlapImpulse = overlapImpulse.nor().scl(overlapDst + 2);
-            this.position.add(overlapImpulse);
-            this.velocity.add(hero.velocity);
-            if (this.velocity.len() > 150) {
-                this.velocity = this.velocity.nor().scl(150);
-            }
-            Vector2 heroOverlapImpulse = new Vector2(hero.position.x - this.position.x, hero.position.y - this.position.y);
-            heroOverlapImpulse = heroOverlapImpulse.nor().scl(overlapDst + 2);
-            hero.position.add(heroOverlapImpulse);
-            hero.velocity.mulAdd(initAsteroidVelocity, this.getScale() * 5.2f);
-            if (this.takeDamage(5)) {
-                gc.getHero().addScore(this.getHpMax() * 100);
-            }
+            collideHero((Hero) collidable);
         }
+    }
 
+    private void collideBullet(Bullet bullet) {
+        bullet.deactivate();
+        if (this.takeDamage(1)) {
+            gc.getHero().addScore(this.getHpMax() * 100);
+        }
+    }
+
+    private void collideHero(Hero hero) {
+        Vector2 initAsteroidVelocity = new Vector2(this.velocity.x, this.velocity.y);
+        float overlapDst = this.hitArea.radius + hero.hitArea.radius - hero.position.dst(this.position);
+        Vector2 overlapImpulse = new Vector2(this.position.x - hero.position.x, this.position.y - hero.position.y);
+        overlapImpulse = overlapImpulse.nor().scl(overlapDst + 2);
+        this.position.add(overlapImpulse);
+        this.velocity.add(hero.velocity);
+        if (this.velocity.len() > 150) {
+            this.velocity = this.velocity.nor().scl(150);
+        }
+        Vector2 heroOverlapImpulse = new Vector2(hero.position.x - this.position.x, hero.position.y - this.position.y);
+        heroOverlapImpulse = heroOverlapImpulse.nor().scl(overlapDst + 2);
+        hero.position.add(heroOverlapImpulse);
+        hero.velocity.mulAdd(initAsteroidVelocity, this.getScale() * 5.2f);
+        if (this.takeDamage(5)) {
+            gc.getHero().addScore(this.getHpMax() * 100);
+        }
     }
 }

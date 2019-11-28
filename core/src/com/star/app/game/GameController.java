@@ -5,6 +5,7 @@ public class GameController {
     private Background background;
     private AsteroidController asteroidController;
     private BulletController bulletController;
+    private ParticleController particleController;
     private Hero hero;
     private CollisionManager collisionManager;
 
@@ -20,6 +21,10 @@ public class GameController {
         return background;
     }
 
+    public ParticleController getParticleController() {
+        return particleController;
+    }
+
     public Hero getHero() {
         return hero;
     }
@@ -27,9 +32,10 @@ public class GameController {
     public GameController() {
         this.background = new Background(this);
         this.hero = new Hero(this);
-        this.bulletController = new BulletController();
+        this.bulletController = new BulletController(this);
         this.asteroidController = new AsteroidController(this,3);
         this.collisionManager = new CollisionManager();
+        this.particleController = new ParticleController();
     }
 
     public void update(float dt) {
@@ -37,6 +43,7 @@ public class GameController {
         hero.update(dt);
         bulletController.update(dt);
         asteroidController.update(dt);
+        particleController.update(dt);
         checkCollisions();
     }
 
