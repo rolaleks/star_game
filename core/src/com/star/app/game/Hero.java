@@ -9,6 +9,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.StringBuilder;
+import com.star.app.screen.GameOverScreen;
 import com.star.app.screen.ScreenManager;
 import com.star.app.screen.utils.Assets;
 
@@ -182,7 +183,8 @@ public class Hero extends GameObject implements Damageable {
     public boolean takeDamage(int amount) {
         hp -= amount;
         if (hp <= 0) {
-            Gdx.app.exit();
+            GameOverScreen.setScore(this.score);
+            ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAVEOVER);
         }
         return false;
     }
