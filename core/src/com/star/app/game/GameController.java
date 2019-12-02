@@ -40,8 +40,8 @@ public class GameController {
     }
 
     public GameController() {
-        this.background = new Background(this);
         this.hero = new Hero(this);
+        this.background = new Background(this);
         this.bulletController = new BulletController(this);
         this.asteroidController = new AsteroidController(this,3);
         this.collisionManager = new CollisionManager();
@@ -66,5 +66,10 @@ public class GameController {
         this.collisionManager.check(spaceItemController.getBulletPool().getActiveList(), this.hero);
         this.collisionManager.check(spaceItemController.getMoneyPool().getActiveList(), this.hero);
         this.collisionManager.check(spaceItemController.getHpPool().getActiveList(), this.hero);
+    }
+
+
+    public void dispose() {
+        background.dispose();
     }
 }

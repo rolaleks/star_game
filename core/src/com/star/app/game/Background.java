@@ -66,9 +66,18 @@ public class Background {
         }
     }
 
+    public void dispose() {
+        textureCosmos.dispose();
+    }
+
     public Vector2 getBackgroundDisplacement() {
+
+        if (gc == null) {
+            return new Vector2(0, 0);
+        }
+
         Vector2 heroVelocity = gc.getHero().getVelocity();
 
-        return new Vector2(heroVelocity.x / 10f, heroVelocity.y /10f);
+        return new Vector2(heroVelocity.x / 10f, heroVelocity.y / 10f);
     }
 }
