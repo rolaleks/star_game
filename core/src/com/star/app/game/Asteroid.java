@@ -53,9 +53,9 @@ public class Asteroid extends GameObject implements Poolable, Damageable {
         if (hp <= 0) {
             deactivate();
             if (scale > 0.25f) {
-                gc.getAsteroidController().launch(position.x, position.y, MathUtils.random(-150.0f, 150.0f), MathUtils.random(-150.0f, 150.0f), scale - 0.2f);
-                gc.getAsteroidController().launch(position.x, position.y, MathUtils.random(-150.0f, 150.0f), MathUtils.random(-150.0f, 150.0f), scale - 0.2f);
-                gc.getAsteroidController().launch(position.x, position.y, MathUtils.random(-150.0f, 150.0f), MathUtils.random(-150.0f, 150.0f), scale - 0.2f);
+                gc.getAsteroidController().launch(position.x, position.y, MathUtils.random(-150.0f, 150.0f), MathUtils.random(-150.0f, 150.0f), scale - 0.2f, hpMax);
+                gc.getAsteroidController().launch(position.x, position.y, MathUtils.random(-150.0f, 150.0f), MathUtils.random(-150.0f, 150.0f), scale - 0.2f, hpMax);
+                gc.getAsteroidController().launch(position.x, position.y, MathUtils.random(-150.0f, 150.0f), MathUtils.random(-150.0f, 150.0f), scale - 0.2f, hpMax);
             }
             return true;
         }
@@ -94,11 +94,19 @@ public class Asteroid extends GameObject implements Poolable, Damageable {
         baseActivate();
     }
 
-    public void activate(float x, float y, float vx, float vy, float scale) {
+    public void activate(int hpMax) {
+        activate();
+        this.hpMax = hpMax;
+        this.hp = hpMax;
+    }
+
+    public void activate(float x, float y, float vx, float vy, float scale, int hpMax) {
         this.position.set(x, y);
         this.velocity.set(vx, vy);
         this.scale = scale;
         baseActivate();
+        this.hpMax = hpMax;
+        this.hp = hpMax;
     }
 
 

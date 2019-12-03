@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -20,6 +21,7 @@ public class GameScreen extends AbstractScreen {
     private Stage stage;
     private BitmapFont font24;
     private boolean isPause;
+    private Label levelLabel;
 
     public GameScreen(SpriteBatch batch) {
         super(batch);
@@ -63,8 +65,17 @@ public class GameScreen extends AbstractScreen {
                 isPause = !isPause;
             }
         });
+
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = font24;
+        Label label = new Label("Level " + gameController.getLevel(), labelStyle);
+        label.setPosition(ScreenManager.HALF_SCREEN_WIDTH - 20, ScreenManager.SCREEN_HEIGHT - 30);
+
+
         stage.addActor(btnPause);
         stage.addActor(btnMenu);
+        stage.addActor(label);
+        levelLabel = label;
 
         skin.dispose();
     }
@@ -77,6 +88,12 @@ public class GameScreen extends AbstractScreen {
         }
         worldRenderer.render();
         stage.draw();
+        update(delta);
+    }
+
+    public void update(float dt) {
+
+        levelLabel.setText("Level " + gameController.getLevel());
     }
 
     @Override

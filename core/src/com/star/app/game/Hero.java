@@ -88,7 +88,7 @@ public class Hero extends GameObject implements Damageable {
         this.createSkillsTable();
         this.shop = new Shop(this);
         this.currentWeapon = new Weapon(
-                gc, this, "Laser", 0.2f, 1, 600.0f, 100,
+                gc, this, "Laser", 0.2f, 1, 600.0f, 500,
                 new Vector3[]{
                         new Vector3(28, 0, 0),
                         new Vector3(28, 90, 90),

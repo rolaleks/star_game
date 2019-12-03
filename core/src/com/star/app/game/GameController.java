@@ -53,13 +53,13 @@ public class GameController {
         this.hero = new Hero(this, "PLAYER1");
         this.background = new Background(this);
         this.bulletController = new BulletController(this);
-        this.asteroidController = new AsteroidController(this,3);
+        this.asteroidController = new AsteroidController(this, 1);
         this.collisionManager = new CollisionManager();
         this.spaceItemController = new SpaceItemController(this);
         this.particleController = new ParticleController();
         this.stage = new Stage(ScreenManager.getInstance().getViewport(), batch);
         this.stage.addActor(hero.getShop());
-        this.level = 1;
+        this.level = 0;
         Gdx.input.setInputProcessor(stage);
     }
 
@@ -86,5 +86,15 @@ public class GameController {
 
     public void dispose() {
         background.dispose();
+    }
+
+    public int nextLevel() {
+
+        return ++level;
+    }
+
+    public int getLevel() {
+
+        return level;
     }
 }
