@@ -10,7 +10,7 @@ public class BulletPool extends ObjectPool<BulletItem> {
     private GameController gc;
 
 
-    public void BulletPool(GameController gc) {
+    public BulletPool(GameController gc) {
         this.gc = gc;
     }
 

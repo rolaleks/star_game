@@ -9,7 +9,7 @@ public class HpPool extends ObjectPool<HpItem> {
     private GameController gc;
 
 
-    public void HpPool(GameController gc) {
+    public HpPool(GameController gc) {
         this.gc = gc;
     }
 

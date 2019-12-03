@@ -9,7 +9,7 @@ public class MoneyPool extends ObjectPool<MoneyItem> {
     private GameController gc;
 
 
-    public void MoneyPool(GameController gc) {
+    public MoneyPool(GameController gc) {
         this.gc = gc;
     }
 

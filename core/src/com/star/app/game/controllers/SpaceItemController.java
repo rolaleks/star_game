@@ -24,9 +24,9 @@ public class SpaceItemController {
 
     public SpaceItemController(GameController gc) {
         this.gc = gc;
-        this.hpPool = new HpPool();
-        this.moneyPool = new MoneyPool();
-        this.bulletPool = new BulletPool();
+        this.hpPool = new HpPool(gc);
+        this.moneyPool = new MoneyPool(gc);
+        this.bulletPool = new BulletPool(gc);
     }
 
     public void render(SpriteBatch batch) {
