@@ -29,7 +29,7 @@ public class GameScreen extends AbstractScreen {
     public void show() {
         isPause = false;
         Assets.getInstance().loadAssets(ScreenManager.ScreenType.GAME);
-        this.gameController = new GameController();
+        this.gameController = new GameController(batch);
         this.worldRenderer = new WorldRenderer(gameController, batch);
 
         this.stage = new Stage(ScreenManager.getInstance().getViewport(), batch);

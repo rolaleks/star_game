@@ -1,12 +1,17 @@
 package com.star.app.game;
 
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.star.app.game.controllers.AsteroidController;
 import com.star.app.game.controllers.BulletController;
 import com.star.app.game.controllers.ParticleController;
 import com.star.app.game.controllers.SpaceItemController;
+import com.star.app.screen.ScreenManager;
 
 public class GameController {
+    private int level;
     private Background background;
     private AsteroidController asteroidController;
     private BulletController bulletController;
@@ -14,6 +19,11 @@ public class GameController {
     private Hero hero;
     private CollisionManager collisionManager;
     private SpaceItemController spaceItemController;
+    private Stage stage;
+
+    public Stage getStage() {
+        return stage;
+    }
 
     public AsteroidController getAsteroidController() {
         return asteroidController;
@@ -39,14 +49,18 @@ public class GameController {
         return hero;
     }
 
-    public GameController() {
-        this.hero = new Hero(this);
+    public GameController(SpriteBatch batch) {
+        this.hero = new Hero(this, "PLAYER1");
         this.background = new Background(this);
         this.bulletController = new BulletController(this);
         this.asteroidController = new AsteroidController(this,3);
         this.collisionManager = new CollisionManager();
         this.spaceItemController = new SpaceItemController(this);
         this.particleController = new ParticleController();
+        this.stage = new Stage(ScreenManager.getInstance().getViewport(), batch);
+        this.stage.addActor(hero.getShop());
+        this.level = 1;
+        Gdx.input.setInputProcessor(stage);
     }
 
     public void update(float dt) {
@@ -57,6 +71,7 @@ public class GameController {
         spaceItemController.update(dt);
         particleController.update(dt);
         checkCollisions();
+        stage.act(dt);
     }
 
 

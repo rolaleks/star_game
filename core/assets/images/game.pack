@@ -17,6 +17,13 @@ simpleButton
   orig: 320, 80
   offset: 0, 0
   index: -1
+shortButton
+  rotate: false
+  xy: 260, 2
+  size: 80, 80
+  orig: 80, 80
+  offset: 0, 0
+  index: -1
 asteroids64
   rotate: false
   xy: 2, 342
@@ -26,56 +33,56 @@ asteroids64
   index: -1
 ship
   rotate: false
-  xy: 260, 2
+  xy: 342, 2
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 hp
   rotate: false
-  xy: 326, 2
+  xy: 408, 2
   size: 60, 60
   orig: 60, 60
   offset: 0, 0
   index: -1
 money
   rotate: false
-  xy: 388, 2
+  xy: 260, 84
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 bullets
   rotate: false
-  xy: 438, 2
+  xy: 260, 134
   size: 48, 48
   orig: 48, 48
   offset: 0, 0
   index: -1
 smButton
   rotate: false
-  xy: 260, 68
+  xy: 310, 84
   size: 120, 32
   orig: 120, 32
   offset: 0, 0
   index: -1
 bullet32
   rotate: false
-  xy: 382, 68
+  xy: 432, 84
   size: 64, 32
   orig: 64, 32
   offset: 0, 0
   index: -1
 bullet
   rotate: false
-  xy: 448, 68
+  xy: 470, 2
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 star16
   rotate: false
-  xy: 488, 2
+  xy: 408, 64
   size: 16, 16
   orig: 16, 16
   offset: 0, 0
