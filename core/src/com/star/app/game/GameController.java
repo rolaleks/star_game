@@ -76,7 +76,7 @@ public class GameController {
         this.hero = new Hero(this, "PLAYER1");
         this.background = new Background(this);
         this.bulletController = new BulletController(this);
-        this.asteroidController = new AsteroidController(this, 50);
+        this.asteroidController = new AsteroidController(this, 1);
         this.collisionManager = new CollisionManager();
         this.spaceItemController = new SpaceItemController(this);
         this.particleController = new ParticleController();
