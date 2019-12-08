@@ -7,12 +7,10 @@ import com.star.app.screen.ScreenManager;
 
 public class Bullet extends GameObject implements Poolable {
     private GameController gc;
-    private float angle;
     private boolean active;
+    private float timer;
+    private GameObject owner;
 
-    public float getAngle() {
-        return angle;
-    }
 
     @Override
     public boolean isActive() {
@@ -29,20 +27,41 @@ public class Bullet extends GameObject implements Poolable {
         this.position = new Vector2(0, 0);
         this.velocity = new Vector2(0, 0);
         this.active = false;
+        timer = 0.0f;
     }
 
-    public void activate(float x, float y, float vx, float vy, float angle) {
+    public void activate(float x, float y, float vx, float vy, float angle, GameObject owner) {
         this.position.set(x, y);
         this.velocity.set(vx, vy);
         this.active = true;
         this.angle = angle;
+        this.owner = owner;
+        //Делаем что бы пуля всегда пролетала растояние равной самой короткой стороне карты
+        this.timer = Math.min(GameController.SPACE_HEIGHT, GameController.SPACE_WIDTH) / this.velocity.len();
+    }
+
+    public boolean isOwner(Object object) {
+        return object == this.owner;
     }
 
     public void update(float dt) {
+        timer -= dt;
         position.mulAdd(velocity, dt);
         super.update();
-        if (position.x < 0.0f || position.x > GameController.SPACE_WIDTH || position.y < 0.0f || position.y > GameController.SPACE_HEIGHT) {
+        if (timer <= 0.0f) {
             deactivate();
+        }
+        if (position.x < 0.0f) {
+            position.x = GameController.SPACE_WIDTH;
+        }
+        if (position.x > GameController.SPACE_WIDTH) {
+            position.x = 0;
+        }
+        if (position.y < 0.0f) {
+            position.y = GameController.SPACE_HEIGHT;
+        }
+        if (position.y > GameController.SPACE_HEIGHT) {
+            position.y = 0;
         }
     }
 
@@ -50,6 +69,8 @@ public class Bullet extends GameObject implements Poolable {
     public void collide(Collidable collidable) {
         if (collidable instanceof Asteroid) {
             collideAsteroid((Asteroid) collidable);
+        } else if (collidable instanceof Damageable) {
+            collideHero((Damageable) collidable);
         }
     }
 
@@ -63,5 +84,13 @@ public class Bullet extends GameObject implements Poolable {
                 1.0f, 1.0f, 1.0f, 1.0f,
                 0.0f, 0.0f, 1.0f, 0.0f
         );
+    }
+
+
+    private void collideHero(Damageable object) {
+        if (!this.isOwner(object)) {
+            this.deactivate();
+            object.takeDamage(1);
+        }
     }
 }

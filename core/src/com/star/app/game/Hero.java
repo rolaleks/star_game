@@ -23,7 +23,6 @@ public class Hero extends GameObject implements Damageable {
     private TextureRegion starTexture;
     private TextureRegion texture;
     private KeysControl keysControl;
-    private float angle;
     private float fireTimer;
     private int score;
     private int scoreView;
@@ -36,10 +35,6 @@ public class Hero extends GameObject implements Damageable {
     private Shop shop;
     private Vector2 tmpVector;
 
-
-    public float getAngle() {
-        return angle;
-    }
 
     public int getScoreView() {
         return scoreView;
@@ -203,21 +198,6 @@ public class Hero extends GameObject implements Damageable {
         if (fireTimer > currentWeapon.getFirePeriod()) {
             fireTimer = 0.0f;
             currentWeapon.fire();
-        }
-    }
-
-    public void checkSpaceBorders() {
-        if (position.x < hitArea.radius) {
-            position.x += GameController.SPACE_WIDTH;
-        }
-        if (position.x > GameController.SPACE_WIDTH - hitArea.radius) {
-            position.x -= GameController.SPACE_WIDTH;
-        }
-        if (position.y < hitArea.radius) {
-            position.y += GameController.SPACE_HEIGHT;
-        }
-        if (position.y > GameController.SPACE_HEIGHT - hitArea.radius) {
-            position.y -= GameController.SPACE_HEIGHT;
         }
     }
 

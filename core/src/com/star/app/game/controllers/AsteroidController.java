@@ -32,21 +32,26 @@ public class AsteroidController extends ObjectPool<Asteroid> {
     }
 
     public void update(float dt) {
-        if (activeList.size() == 0) {
-            int level = gc.nextLevel();
-            //Каждые 5 уровней добавляем по 1 астероиду
-            int extraAsteroids = (level - level % 5) / 5;
-            for (int i = 0; i < initAsteroidCount + extraAsteroids; i++) {
-                //с каждым уровне увеличиваем здоровье встероида на 1
-                launch(initMaxHp * (level - 1));
-            }
-            return;
-        }
 
         for (int i = 0; i < activeList.size(); i++) {
             activeList.get(i).update(dt);
         }
         checkPool();
+    }
+
+    public void nextLevel() {
+        for (int i = 0; i < activeList.size(); i++) {
+            activeList.get(i).deactivate();
+        }
+
+        int level = gc.getLevel();
+        //Каждые 5 уровней добавляем по 1 астероиду
+        int extraAsteroids = (level - level % 5) / 5;
+        for (int i = 0; i < initAsteroidCount + extraAsteroids; i++) {
+            //с каждым уровне увеличиваем здоровье встероида на 1
+            launch(initMaxHp * (level - 1));
+        }
+        return;
     }
 
 

@@ -8,10 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.star.app.game.controllers.AsteroidController;
-import com.star.app.game.controllers.BulletController;
-import com.star.app.game.controllers.ParticleController;
-import com.star.app.game.controllers.SpaceItemController;
+import com.star.app.game.controllers.*;
 import com.star.app.screen.ScreenManager;
 import com.star.app.screen.utils.Assets;
 
@@ -25,6 +22,7 @@ public class GameController {
     private int level;
     private Background background;
     private AsteroidController asteroidController;
+    private BotController botController;
     private BulletController bulletController;
     private ParticleController particleController;
     private Hero hero;
@@ -52,6 +50,10 @@ public class GameController {
         return asteroidController;
     }
 
+    public BotController getBotController() {
+        return botController;
+    }
+
     public BulletController getBulletController() {
         return bulletController;
     }
@@ -77,6 +79,7 @@ public class GameController {
         this.background = new Background(this);
         this.bulletController = new BulletController(this);
         this.asteroidController = new AsteroidController(this, 1);
+        this.botController = new BotController(this, 1);
         this.collisionManager = new CollisionManager();
         this.spaceItemController = new SpaceItemController(this);
         this.particleController = new ParticleController();
@@ -97,15 +100,25 @@ public class GameController {
         hero.update(dt);
         bulletController.update(dt);
         asteroidController.update(dt);
+        botController.update(dt);
         spaceItemController.update(dt);
         particleController.update(dt);
         checkCollisions();
+        checkNextLevel();
         stage.act(dt);
+    }
+
+    private void checkNextLevel() {
+        if (asteroidController.getActiveList().size() == 0) {
+            nextLevel();
+        }
     }
 
 
     public void checkCollisions() {
         this.collisionManager.check(bulletController.getActiveList(), asteroidController.getActiveList());
+        this.collisionManager.check(bulletController.getActiveList(), botController.getActiveList());
+        this.collisionManager.check(bulletController.getActiveList(), this.hero);
         this.collisionManager.check(asteroidController.getActiveList(), this.hero);
         this.collisionManager.check(spaceItemController.getBulletPool().getActiveList(), this.hero);
         this.collisionManager.check(spaceItemController.getMoneyPool().getActiveList(), this.hero);
@@ -119,6 +132,8 @@ public class GameController {
 
     public int nextLevel() {
 
+        asteroidController.nextLevel();
+        botController.nextLevel();
         return ++level;
     }
 

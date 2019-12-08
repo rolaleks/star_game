@@ -144,6 +144,8 @@ public class Asteroid extends GameObject implements Poolable, Damageable {
             collideBullet((Bullet) collidable);
         } else if (collidable instanceof Hero) {
             collideHero((Hero) collidable);
+        } else if (collidable instanceof Bot) {
+            collideHero((Bot) collidable);
         }
     }
 
@@ -177,7 +179,7 @@ public class Asteroid extends GameObject implements Poolable, Damageable {
         }
     }
 
-    private void collideHero(Hero hero) {
+    private void collideHero(GameObject hero) {
         Vector2 initAsteroidVelocity = new Vector2(this.velocity.x, this.velocity.y);
         float overlapDst = this.hitArea.radius + hero.hitArea.radius - hero.position.dst(this.position);
         Vector2 overlapImpulse = new Vector2(this.position.x - hero.position.x, this.position.y - hero.position.y);
