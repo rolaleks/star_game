@@ -3,6 +3,8 @@ package com.star.app.screen.utils;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.FileHandleResolver;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -43,8 +45,11 @@ public class Assets {
                 break;
             case GAME:
                 assetManager.load("images/game.pack", TextureAtlas.class);
-                createStandardFont(32);
+                assetManager.load("audio/Shoot.mp3", Sound.class);
+                assetManager.load("audio/Music.mp3", Music.class);
                 createStandardFont(24);
+                createStandardFont(32);
+                createStandardFont(72);
                 break;
         }
     }

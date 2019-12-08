@@ -65,22 +65,33 @@ public class Asteroid extends GameObject implements Poolable, Damageable {
 
     public void render(SpriteBatch batch) {
         batch.draw(texture, position.x - 128, position.y - 128, 128, 128, 256, 256, scale, scale, angle);
+        if(position.x > GameController.SPACE_WIDTH - ScreenManager.HALF_SCREEN_WIDTH) {
+            batch.draw(texture, position.x - 128 - GameController.SPACE_WIDTH, position.y - 128, 128, 128, 256, 256, scale, scale, angle);
+        }
+        if(position.x < ScreenManager.HALF_SCREEN_WIDTH) {
+            batch.draw(texture, position.x - 128 + GameController.SPACE_WIDTH, position.y - 128, 128, 128, 256, 256, scale, scale, angle);
+        }
+        if(position.y > GameController.SPACE_HEIGHT - ScreenManager.HALF_SCREEN_HEIGHT) {
+            batch.draw(texture, position.x - 128, position.y - 128 - GameController.SPACE_HEIGHT, 128, 128, 256, 256, scale, scale, angle);
+        }
+        if(position.y < ScreenManager.HALF_SCREEN_HEIGHT) {
+            batch.draw(texture, position.x - 128, position.y - 128 + GameController.SPACE_HEIGHT, 128, 128, 256, 256, scale, scale, angle);
+        }
     }
 
     public void update(float dt) {
-        position.x += (velocity.x - gc.getBackground().getBackgroundDisplacement().x) * dt;
-        position.y += (velocity.y - gc.getBackground().getBackgroundDisplacement().y) * dt;
+        position.mulAdd(velocity, dt);
         angle += rotationSpeed * dt;
         if (position.x < -BASE_RADIUS * scale) {
-            position.x = ScreenManager.SCREEN_WIDTH + BASE_RADIUS * scale;
+            position.x = GameController.SPACE_WIDTH + BASE_RADIUS * scale;
         }
-        if (position.x > ScreenManager.SCREEN_WIDTH + BASE_RADIUS * scale) {
+        if (position.x > GameController.SPACE_WIDTH + BASE_RADIUS * scale) {
             position.x = -BASE_RADIUS * scale;
         }
         if (position.y < -BASE_RADIUS * scale) {
-            position.y = ScreenManager.SCREEN_HEIGHT + BASE_RADIUS * scale;
+            position.y = GameController.SPACE_HEIGHT + BASE_RADIUS * scale;
         }
-        if (position.y > ScreenManager.SCREEN_HEIGHT + BASE_RADIUS * scale) {
+        if (position.y > GameController.SPACE_HEIGHT + BASE_RADIUS * scale) {
             position.y = -BASE_RADIUS * scale;
         }
         hitArea.setPosition(position);
@@ -121,7 +132,7 @@ public class Asteroid extends GameObject implements Poolable, Damageable {
     }
 
     private void generatePositionAndVelocity() {
-        this.position = new Vector2(MathUtils.random(-128, ScreenManager.SCREEN_WIDTH + 128), MathUtils.random(-128, ScreenManager.SCREEN_HEIGHT + 128));
+        this.position = new Vector2(MathUtils.random(-128, GameController.SPACE_WIDTH + 128), MathUtils.random(-128, GameController.SPACE_HEIGHT + 128));
         this.velocity = new Vector2(MathUtils.random(-100, 100), MathUtils.random(-100, 100));
     }
 

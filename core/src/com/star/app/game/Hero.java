@@ -2,6 +2,7 @@ package com.star.app.game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -19,6 +20,7 @@ public class Hero extends GameObject implements Damageable {
     private final float frontSpeed = 750f;
     private final float rearSpeed = 375f;
 
+    private TextureRegion starTexture;
     private TextureRegion texture;
     private KeysControl keysControl;
     private float angle;
@@ -32,6 +34,7 @@ public class Hero extends GameObject implements Damageable {
     private Skill[] skills;
     private int money;
     private Shop shop;
+    private Vector2 tmpVector;
 
 
     public float getAngle() {
@@ -77,6 +80,7 @@ public class Hero extends GameObject implements Damageable {
     public Hero(GameController gc, String keysControlPrefix) {
         super();
         this.gc = gc;
+        this.starTexture = Assets.getInstance().getAtlas().findRegion("star16");
         this.texture = Assets.getInstance().getAtlas().findRegion("ship");
         this.position = new Vector2(640, 360);
         this.angle = 0.0f;
@@ -87,6 +91,7 @@ public class Hero extends GameObject implements Damageable {
         this.keysControl = new KeysControl(OptionsUtils.loadProperties(), keysControlPrefix);
         this.createSkillsTable();
         this.shop = new Shop(this);
+        this.tmpVector = new Vector2(0, 0);
         this.currentWeapon = new Weapon(
                 gc, this, "Laser", 0.2f, 1, 600.0f, 500,
                 new Vector3[]{
@@ -108,9 +113,32 @@ public class Hero extends GameObject implements Damageable {
         strBuilder.append("HP: ").append(hp).append(" / ").append(hpMax).append("\n");
         strBuilder.append("BULLETS: ").append(currentWeapon.getCurBullets()).append(" / ").append(currentWeapon.getMaxBullets()).append("\n");
         font.draw(batch, strBuilder, 20, 1060);
+
+        int mapX = 1700;
+        int mapY = 800;
+        batch.setColor(Color.GREEN);
+        batch.draw(starTexture, mapX - 24, mapY - 24, 48, 48);
+        batch.setColor(Color.RED);
+        for (int i = 0; i < gc.getAsteroidController().getActiveList().size(); i++) {
+            Asteroid a = gc.getAsteroidController().getActiveList().get(i);
+            float dst = position.dst(a.getPosition());
+            if (dst < 3000.0f) {
+                tmpVector.set(a.getPosition()).sub(this.position);
+                tmpVector.scl(160.0f / 3000.0f);
+                batch.draw(starTexture, mapX + tmpVector.x - 16, mapY + tmpVector.y - 16, 32, 32);
+            }
+        }
+
+        batch.setColor(Color.WHITE);
+        for (int i = 0; i < 120; i++) {
+            batch.draw(starTexture, mapX + 160.0f * MathUtils.cosDeg(360.0f / 120.0f * i) - 8, mapY + 160.0f * MathUtils.sinDeg(360.0f / 120.0f * i) - 8);
+        }
     }
 
     public void update(float dt) {
+        if (velocity.len() > 1000.0f) {
+            velocity.nor().scl(1000.0f);
+        }
         fireTimer += dt;
         updateScore(dt);
 
@@ -155,30 +183,21 @@ public class Hero extends GameObject implements Damageable {
                 );
             }
         }
-
         checkSpaceBorders();
 
         super.update();
     }
 
-    public void checkSpaceBorders() {
-        if (position.x < hitArea.radius) {
-            position.x = hitArea.radius;
-            velocity.x *= -1;
+    @Override
+    public boolean takeDamage(int amount) {
+        hp -= amount;
+        if (hp <= 0) {
+            GameOverScreen.setScore(this.score);
+            ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAMEOVER);
         }
-        if (position.x > ScreenManager.SCREEN_WIDTH - hitArea.radius) {
-            position.x = ScreenManager.SCREEN_WIDTH - hitArea.radius;
-            velocity.x *= -1;
-        }
-        if (position.y < hitArea.radius) {
-            position.y = hitArea.radius;
-            velocity.y *= -1;
-        }
-        if (position.y > ScreenManager.SCREEN_HEIGHT - hitArea.radius) {
-            position.y = ScreenManager.SCREEN_HEIGHT - hitArea.radius;
-            velocity.y *= -1;
-        }
+        return false;
     }
+
 
     public void tryToFire() {
         if (fireTimer > currentWeapon.getFirePeriod()) {
@@ -187,14 +206,29 @@ public class Hero extends GameObject implements Damageable {
         }
     }
 
+    public void checkSpaceBorders() {
+        if (position.x < hitArea.radius) {
+            position.x += GameController.SPACE_WIDTH;
+        }
+        if (position.x > GameController.SPACE_WIDTH - hitArea.radius) {
+            position.x -= GameController.SPACE_WIDTH;
+        }
+        if (position.y < hitArea.radius) {
+            position.y += GameController.SPACE_HEIGHT;
+        }
+        if (position.y > GameController.SPACE_HEIGHT - hitArea.radius) {
+            position.y -= GameController.SPACE_HEIGHT;
+        }
+    }
+
     public void updateScore(float dt) {
-        if (scoreView < score) {
+        if (scoreView != score) {
             float scoreSpeed = (score - scoreView) / 2.0f;
-            if (scoreSpeed < 2000.0f) {
-                scoreSpeed = 2000.0f;
+            if (Math.abs(scoreSpeed) < 2000.0f) {
+                scoreSpeed = Math.signum(scoreSpeed) * 2000.0f;
             }
             scoreView += scoreSpeed * dt;
-            if (scoreView > score) {
+            if (Math.abs(scoreView - score) < Math.abs(scoreSpeed * dt)) {
                 scoreView = score;
             }
         }
@@ -209,16 +243,6 @@ public class Hero extends GameObject implements Damageable {
 
     private void collideAsteroid(Asteroid asteroid) {
         this.takeDamage((int) (asteroid.getScale() * 10));
-    }
-
-    @Override
-    public boolean takeDamage(int amount) {
-        hp -= amount;
-        if (hp <= 0) {
-            GameOverScreen.setScore(this.score);
-            ScreenManager.getInstance().changeScreen(ScreenManager.ScreenType.GAMEOVER);
-        }
-        return false;
     }
 
     public void addHp(int amount) {

@@ -41,7 +41,7 @@ public class Bullet extends GameObject implements Poolable {
     public void update(float dt) {
         position.mulAdd(velocity, dt);
         super.update();
-        if (position.x < 0.0f || position.x > ScreenManager.SCREEN_WIDTH || position.y < 0.0f || position.y > ScreenManager.SCREEN_HEIGHT) {
+        if (position.x < 0.0f || position.x > GameController.SPACE_WIDTH || position.y < 0.0f || position.y > GameController.SPACE_HEIGHT) {
             deactivate();
         }
     }

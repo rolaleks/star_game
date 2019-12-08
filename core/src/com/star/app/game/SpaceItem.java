@@ -38,7 +38,7 @@ public abstract class SpaceItem extends GameObject implements Poolable {
         float dst = gc.getHero().getPosition().dst(this.position);
         if (dst < minHeroMagnetDistance) {
 
-            Vector2 direction = gc.getHero().getPosition().cpy().sub(this.position.cpy());
+            Vector2 direction = gc.getHero().getPosition().cpy().sub(this.position);
             float koef = 1 / dst;
             this.velocity.mulAdd(direction, koef * koef * dt * 40000);
         }
