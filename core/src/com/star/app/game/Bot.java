@@ -53,7 +53,8 @@ public class Bot extends GameObject implements Damageable, Poolable {
                 gc, this, "Laser", 0.9f, 1, 400.0f, 99999,
                 new Vector3[]{
                         new Vector3(28, 0, 0),
-                }
+                },
+                1
         );
     }
 

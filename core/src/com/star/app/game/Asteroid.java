@@ -65,16 +65,16 @@ public class Asteroid extends GameObject implements Poolable, Damageable {
 
     public void render(SpriteBatch batch) {
         batch.draw(texture, position.x - 128, position.y - 128, 128, 128, 256, 256, scale, scale, angle);
-        if(position.x > GameController.SPACE_WIDTH - ScreenManager.HALF_SCREEN_WIDTH) {
+        if (position.x > GameController.SPACE_WIDTH - ScreenManager.HALF_SCREEN_WIDTH) {
             batch.draw(texture, position.x - 128 - GameController.SPACE_WIDTH, position.y - 128, 128, 128, 256, 256, scale, scale, angle);
         }
-        if(position.x < ScreenManager.HALF_SCREEN_WIDTH) {
+        if (position.x < ScreenManager.HALF_SCREEN_WIDTH) {
             batch.draw(texture, position.x - 128 + GameController.SPACE_WIDTH, position.y - 128, 128, 128, 256, 256, scale, scale, angle);
         }
-        if(position.y > GameController.SPACE_HEIGHT - ScreenManager.HALF_SCREEN_HEIGHT) {
+        if (position.y > GameController.SPACE_HEIGHT - ScreenManager.HALF_SCREEN_HEIGHT) {
             batch.draw(texture, position.x - 128, position.y - 128 - GameController.SPACE_HEIGHT, 128, 128, 256, 256, scale, scale, angle);
         }
-        if(position.y < ScreenManager.HALF_SCREEN_HEIGHT) {
+        if (position.y < ScreenManager.HALF_SCREEN_HEIGHT) {
             batch.draw(texture, position.x - 128, position.y - 128 + GameController.SPACE_HEIGHT, 128, 128, 256, 256, scale, scale, angle);
         }
     }
@@ -151,21 +151,22 @@ public class Asteroid extends GameObject implements Poolable, Damageable {
 
     private void collideBullet(Bullet bullet) {
         bullet.deactivate();
-        if (this.takeDamage(1)) {
+        if (this.takeDamage(bullet.getDamage())) {
             gc.getHero().addScore(this.getHpMax() * 100);
         }
         //10% выероятность при полном масштабе астероида
-        if (MathUtils.random(0, 100) < scale * 10) {
+        if (MathUtils.random(0, 100) < scale * 100) {
+
             //Полеты предметов только в горизонтальном направлении с небольшим отклонением по высоте
             Vector2 itemVelocity = new Vector2(MathUtils.random(-100.0f, 100.0f), MathUtils.random(-5.0f, 5.0f));
             Vector2 itemPosition;
-            float positionY = MathUtils.random(10, ScreenManager.SCREEN_HEIGHT - 10);
+            float positionY = MathUtils.random(10, GameController.SPACE_HEIGHT - 10);
             if (itemVelocity.x > 0) {
                 itemPosition = new Vector2(MathUtils.random(-100.0f, -50.0f), positionY);
             } else {
-                itemPosition = new Vector2(MathUtils.random(ScreenManager.SCREEN_WIDTH + 50.0f, ScreenManager.SCREEN_WIDTH + 100.0f), positionY);
+                itemPosition = new Vector2(MathUtils.random(GameController.SPACE_WIDTH + 50.0f, GameController.SPACE_WIDTH + 100.0f), positionY);
             }
-            switch (MathUtils.random(1, 3)) {
+            switch (MathUtils.random(1, 4)) {
                 case 1:
                     gc.getSpaceItemController().launchBullet(itemPosition.x, itemPosition.y, itemVelocity.x, itemVelocity.y, 1.0f);
                     break;
@@ -174,6 +175,9 @@ public class Asteroid extends GameObject implements Poolable, Damageable {
                     break;
                 case 3:
                     gc.getSpaceItemController().launchMoney(itemPosition.x, itemPosition.y, itemVelocity.x, itemVelocity.y, 1.0f);
+                    break;
+                case 4:
+                    gc.getSpaceItemController().launchWeapon(itemPosition.x, itemPosition.y, itemVelocity.x, itemVelocity.y, 1.0f);
                     break;
             }
         }

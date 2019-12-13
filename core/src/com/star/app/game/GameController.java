@@ -42,6 +42,11 @@ public class GameController {
         return msg;
     }
 
+    public void setMsg(String msg, float timer) {
+        this.msg = msg;
+        this.msgTimer = timer;
+    }
+
     public Stage getStage() {
         return stage;
     }
@@ -78,7 +83,7 @@ public class GameController {
         this.hero = new Hero(this, "PLAYER1");
         this.background = new Background(this);
         this.bulletController = new BulletController(this);
-        this.asteroidController = new AsteroidController(this, 1);
+        this.asteroidController = new AsteroidController(this, 3);
         this.botController = new BotController(this, 1);
         this.collisionManager = new CollisionManager();
         this.spaceItemController = new SpaceItemController(this);
@@ -120,9 +125,9 @@ public class GameController {
         this.collisionManager.check(bulletController.getActiveList(), botController.getActiveList());
         this.collisionManager.check(bulletController.getActiveList(), this.hero);
         this.collisionManager.check(asteroidController.getActiveList(), this.hero);
-        this.collisionManager.check(spaceItemController.getBulletPool().getActiveList(), this.hero);
-        this.collisionManager.check(spaceItemController.getMoneyPool().getActiveList(), this.hero);
-        this.collisionManager.check(spaceItemController.getHpPool().getActiveList(), this.hero);
+        for (int i = 0; i < spaceItemController.getObjectPools().size(); i++) {
+            this.collisionManager.check(spaceItemController.getObjectPools().get(i).getActiveList(), this.hero);
+        }
     }
 
 
