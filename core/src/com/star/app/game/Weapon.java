@@ -16,7 +16,10 @@ public class Weapon {
     private float bulletSpeed;
     private int maxBullets;
     private int curBullets;
+    private int hitRadius;
     private Sound shootSound;
+    //Флаг, что оружие исчезает по истечению потронов
+    private boolean isExpired;
 
     // Когда мы описываем слот Vector3[] slots:
     //   x - это то на сколько пикселей он смещен относительно центра
@@ -37,7 +40,23 @@ public class Weapon {
         return curBullets;
     }
 
-    public Weapon(GameController gc, GameObject object, String title, float firePeriod, int damage, float bulletSpeed, int maxBullets, Vector3[] slots) {
+    public void setExpired(boolean expired) {
+        this.isExpired = expired;
+    }
+
+    public boolean isExpired() {
+        return isExpired;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setObject(GameObject object) {
+        this.object = object;
+    }
+
+    public Weapon(GameController gc, GameObject object, String title, float firePeriod, int damage, float bulletSpeed, int maxBullets, Vector3[] slots, int hitRadius) {
         this.gc = gc;
         this.object = object;
         this.title = title;
@@ -47,6 +66,8 @@ public class Weapon {
         this.maxBullets = maxBullets;
         this.curBullets = this.maxBullets;
         this.slots = slots;
+        this.isExpired = false;
+        this.hitRadius = hitRadius;
         this.shootSound = Assets.getInstance().getAssetManager().get("audio/Shoot.mp3");
     }
 
@@ -61,7 +82,7 @@ public class Weapon {
                 y = object.getPosition().y + slots[i].x * MathUtils.sinDeg(object.getAngle() + slots[i].y);
                 vx = object.getVelocity().x + bulletSpeed * MathUtils.cosDeg(object.getAngle() + slots[i].z);
                 vy = object.getVelocity().y + bulletSpeed * MathUtils.sinDeg(object.getAngle() + slots[i].z);
-                gc.getBulletController().setup(x, y, vx, vy, object.getAngle() + slots[i].z, object);
+                gc.getBulletController().setup(x, y, vx, vy, object.getAngle() + slots[i].z, object, hitRadius, damage);
             }
         }
     }

@@ -43,8 +43,8 @@ public class BulletController extends ObjectPool<Bullet> {
         }
     }
 
-    public void setup(float x, float y, float vx, float vy, float angle, GameObject owner) {
-        getActiveElement().activate(x, y, vx, vy, angle, owner);
+    public void setup(float x, float y, float vx, float vy, float angle, GameObject owner, int hitRadius, int damage) {
+        getActiveElement().activate(x, y, vx, vy, angle, owner, hitRadius, damage);
     }
 
     public void update(float dt) {

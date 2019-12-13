@@ -10,6 +10,7 @@ public class Bullet extends GameObject implements Poolable {
     private boolean active;
     private float timer;
     private GameObject owner;
+    private int damage;
 
 
     @Override
@@ -21,6 +22,10 @@ public class Bullet extends GameObject implements Poolable {
         active = false;
     }
 
+    public int getDamage() {
+        return damage;
+    }
+
     public Bullet(GameController gc) {
         super();
         this.gc = gc;
@@ -30,12 +35,14 @@ public class Bullet extends GameObject implements Poolable {
         timer = 0.0f;
     }
 
-    public void activate(float x, float y, float vx, float vy, float angle, GameObject owner) {
+    public void activate(float x, float y, float vx, float vy, float angle, GameObject owner, int hitRadius, int damage) {
         this.position.set(x, y);
         this.velocity.set(vx, vy);
         this.active = true;
         this.angle = angle;
         this.owner = owner;
+        this.setHitRadius(hitRadius);
+        this.damage = damage;
         //Делаем что бы пуля всегда пролетала растояние равной самой короткой стороне карты
         this.timer = Math.min(GameController.SPACE_HEIGHT, GameController.SPACE_WIDTH) / this.velocity.len();
     }
@@ -65,6 +72,10 @@ public class Bullet extends GameObject implements Poolable {
         }
     }
 
+    public void setHitRadius(int radius) {
+        this.hitArea.radius = radius;
+    }
+
     @Override
     public void collide(Collidable collidable) {
         if (collidable instanceof Asteroid) {
@@ -90,7 +101,7 @@ public class Bullet extends GameObject implements Poolable {
     private void collideHero(Damageable object) {
         if (!this.isOwner(object)) {
             this.deactivate();
-            object.takeDamage(1);
+            object.takeDamage(damage);
         }
     }
 }

@@ -15,7 +15,12 @@ import com.star.app.screen.ScreenManager;
 import com.star.app.screen.utils.Assets;
 import com.star.app.screen.utils.OptionsUtils;
 
+import java.util.ArrayList;
+
 public class Hero extends GameObject implements Damageable {
+
+    private static final int MAIN_WEAPON_INDEX = 0;
+
     private GameController gc;
     private final float frontSpeed = 750f;
     private final float rearSpeed = 375f;
@@ -28,7 +33,7 @@ public class Hero extends GameObject implements Damageable {
     private int scoreView;
     private int hpMax;
     private int hp;
-    private Weapon currentWeapon;
+    private ArrayList<Weapon> weapons;
     private StringBuilder strBuilder;
     private Skill[] skills;
     private int money;
@@ -53,7 +58,8 @@ public class Hero extends GameObject implements Damageable {
     }
 
     public Weapon getCurrentWeapon() {
-        return currentWeapon;
+
+        return weapons.get(weapons.size() - 1);
     }
 
     public Skill[] getSkills() {
@@ -62,6 +68,20 @@ public class Hero extends GameObject implements Damageable {
 
     public Shop getShop() {
         return shop;
+    }
+
+    public void setCurrentWeapon(Weapon currentWeapon) {
+        gc.setMsg(currentWeapon.getTitle(), 2.0f);
+        weapons.add(currentWeapon);
+    }
+
+    public void replaceWeapon(Weapon currentWeapon, int index) {
+        if (index < weapons.size())
+            weapons.set(index, currentWeapon);
+    }
+
+    public void removeCurrentWeapon() {
+        weapons.remove(weapons.size() - 1);
     }
 
     public boolean isMoneyEnough(int amount) {
@@ -87,14 +107,16 @@ public class Hero extends GameObject implements Damageable {
         this.createSkillsTable();
         this.shop = new Shop(this);
         this.tmpVector = new Vector2(0, 0);
-        this.currentWeapon = new Weapon(
+        this.weapons = new ArrayList<>();
+        this.setCurrentWeapon(new Weapon(
                 gc, this, "Laser", 0.2f, 1, 600.0f, 500,
                 new Vector3[]{
                         new Vector3(28, 0, 0),
                         new Vector3(28, 90, 90),
                         new Vector3(28, -90, -90)
-                }
-        );
+                },
+                1
+        ));
     }
 
     public void render(SpriteBatch batch) {
@@ -106,7 +128,7 @@ public class Hero extends GameObject implements Damageable {
         strBuilder.append("SCORE: ").append(scoreView).append("\n");
         strBuilder.append("MONEY: ").append(money).append("\n");
         strBuilder.append("HP: ").append(hp).append(" / ").append(hpMax).append("\n");
-        strBuilder.append("BULLETS: ").append(currentWeapon.getCurBullets()).append(" / ").append(currentWeapon.getMaxBullets()).append("\n");
+        strBuilder.append("BULLETS: ").append(getCurrentWeapon().getCurBullets()).append(" / ").append(getCurrentWeapon().getMaxBullets()).append("\n");
         font.draw(batch, strBuilder, 20, 1060);
 
         int mapX = 1700;
@@ -117,10 +139,22 @@ public class Hero extends GameObject implements Damageable {
         for (int i = 0; i < gc.getAsteroidController().getActiveList().size(); i++) {
             Asteroid a = gc.getAsteroidController().getActiveList().get(i);
             float dst = position.dst(a.getPosition());
-            if (dst < 3000.0f) {
+            if (dst < 5000.0f) {
                 tmpVector.set(a.getPosition()).sub(this.position);
-                tmpVector.scl(160.0f / 3000.0f);
+                tmpVector.scl(160.0f / 5000.0f);
                 batch.draw(starTexture, mapX + tmpVector.x - 16, mapY + tmpVector.y - 16, 32, 32);
+            }
+        }
+        for (int i = 0; i < gc.getSpaceItemController().getObjectPools().size(); i++) {
+            for (int j = 0; j < gc.getSpaceItemController().getObjectPools().get(i).getActiveList().size(); j++) {
+                SpaceItem si = gc.getSpaceItemController().getObjectPools().get(i).getActiveList().get(j);
+                float dst = position.dst(si.getPosition());
+                if (dst < 5000.0f) {
+                    tmpVector.set(si.getPosition()).sub(this.position);
+                    tmpVector.scl(160.0f / 5000.0f);
+                    batch.setColor(Color.YELLOW);
+                    batch.draw(starTexture, mapX + tmpVector.x - 16, mapY + tmpVector.y - 16, 32, 32);
+                }
             }
         }
 
@@ -195,9 +229,13 @@ public class Hero extends GameObject implements Damageable {
 
 
     public void tryToFire() {
-        if (fireTimer > currentWeapon.getFirePeriod()) {
+        if (fireTimer > getCurrentWeapon().getFirePeriod()) {
             fireTimer = 0.0f;
-            currentWeapon.fire();
+            if (getCurrentWeapon().isExpired() && getCurrentWeapon().getCurBullets() == 0) {
+                removeCurrentWeapon();
+            } else {
+                getCurrentWeapon().fire();
+            }
         }
     }
 
@@ -262,28 +300,31 @@ public class Hero extends GameObject implements Damageable {
         skills[1] = new Skill("WX-I",
                 new Runnable[]{
                         () -> {
-                            this.currentWeapon = new Weapon(
-                                    gc, this, "Laser", 0.3f, 1, 600.0f, 320,
-                                    new Vector3[]{
-                                            new Vector3(24, 90, 10),
-                                            new Vector3(24, 0, 0),
-                                            new Vector3(24, -90, -10)
-                                    }
-                            );
+                            this.replaceWeapon(
+                                    new Weapon(
+                                            gc, this, "Laser", 0.3f, 1, 600.0f, 320,
+                                            new Vector3[]{
+                                                    new Vector3(24, 90, 10),
+                                                    new Vector3(24, 0, 0),
+                                                    new Vector3(24, -90, -10)
+                                            },
+                                            1
+                                    ), MAIN_WEAPON_INDEX);
                         },
                         () -> {
-                            this.currentWeapon = new Weapon(
+                            this.replaceWeapon(new Weapon(
                                     gc, this, "Laser", 0.3f, 1, 600.0f, 320,
                                     new Vector3[]{
                                             new Vector3(24, 90, 20),
                                             new Vector3(24, 20, 0),
                                             new Vector3(24, -20, 0),
                                             new Vector3(24, -90, -20)
-                                    }
-                            );
+                                    },
+                                    1
+                            ), MAIN_WEAPON_INDEX);
                         },
                         () -> {
-                            this.currentWeapon = new Weapon(
+                            this.replaceWeapon(new Weapon(
                                     gc, this, "Laser", 0.05f, 2, 600.0f, 32000,
                                     new Vector3[]{
                                             new Vector3(24, 90, 20),
@@ -291,8 +332,9 @@ public class Hero extends GameObject implements Damageable {
                                             new Vector3(24, 0, 0),
                                             new Vector3(24, -20, 0),
                                             new Vector3(24, -90, -20)
-                                    }
-                            );
+                                    },
+                                    1
+                            ), MAIN_WEAPON_INDEX);
                         }
                 },
                 new int[]{
